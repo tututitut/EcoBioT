@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBioT Smart Composter - INOTECH 2026</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0F8B8D',
+                            700: '#0A6365',
+                            800: '#183B3D',
+                            900: '#11292B',
+                        },
+                        cyan: {
+                            400: '#55C9C2',
+                            500: '#2EB5B8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Soft Glassmorphism Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="font-sans flex h-screen overflow-hidden text-[#183B3D]">
+
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-[#183B3D]/30 backdrop-blur-xs z-30 hidden md:hidden transition-opacity" onclick="toggleMobileSidebar(false)"></div>
+
+    <!-- ========================================== -->
+    <!-- INTERACTIVE SIDEBAR NAVIGATION             -->
+    <!-- ========================================== -->
+    <aside id="mainSidebar" class="glass-sidebar w-64 flex flex-col justify-between p-4 z-40 fixed inset-y-0 left-0 -translate-x-full md:relative md:translate-x-0 flex-shrink-0 transition-all duration-300 ease-in-out">
+        <div>
+            <!-- Header Brand & Collapse Toggle -->
+            <div class="flex items-center justify-between mb-6 px-1">
+                <div class="flex items-center gap-3 cursor-pointer overflow-hidden" onclick="switchPage('dashboard')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0F8B8D] to-[#55C9C2] flex items-center justify-center text-white shadow-md shadow-[#0F8B8D]/25 flex-shrink-0">
+                        <!-- Lucide Sprout Icon -->
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 20h10"/>
+                            <path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+                            <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4.1 5.5.8z"/>
+                            <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4.1 1.1-4.9 2z"/>
+                        </svg>
+                    </div>
+                    <div class="sidebar-text truncate">
+                        <h1 class="font-bold text-base text-[#183B3D] tracking-tight leading-tight">EcoBioT</h1>
+                        <p class="text-[11px] font-medium text-[#0F8B8D]">Smart Composter</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Sidebar Collapse Toggle Button -->
+                <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="hidden md:flex p-1.5 rounded-lg text-[#64777B] hover:text-[#0F8B8D] hover:bg-white/80 transition" title="Minimize / Expand Sidebar" aria-label="Toggle Sidebar Width">
+                    <!-- Lucide Panel Left Close Icon -->
+                    <svg id="iconPanelClose" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2"/>
+                        <path d="M9 3v18"/>
+                        <path d="m16 15-3-3 3-3"/>
+                    </svg>
+                    <!-- Lucide Panel Left Open Icon (hidden when expanded) -->
+                    <svg id="iconPanelOpen" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2"/>
+                        <path d="M9 3v18"/>
+                        <path d="m14 9 3 3-3 3"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="space-y-1.5" id="sidebarNav" aria-label="Main Navigation">
+                
+                <!-- Dashboard -->
+                <button data-page="dashboard" data-tooltip="Dashboard" class="nav-item active w-full flex items-center gap-3 px-3.5 py-3 text-sm" aria-label="Dashboard">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="7" height="9" x="3" y="3" rx="1"/>
+                        <rect width="7" height="5" x="14" y="3" rx="1"/>
+                        <rect width="7" height="9" x="14" y="12" rx="1"/>
+                        <rect width="7" height="5" x="3" y="16" rx="1"/>
+                    </svg>
+                    <span class="nav-label truncate">Dashboard</span>
+                </button>
+
+                <!-- Composter Status -->
+                <button data-page="status" data-tooltip="Composter Status" class="nav-item w-full flex items-center gap-3 px-3.5 py-3 text-sm" aria-label="Composter Status">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    <span class="nav-label truncate">Composter Status</span>
+                </button>
+
+                <!-- Data Trends -->
+                <button data-page="trends" data-tooltip="Data Trends" class="nav-item w-full flex items-center gap-3 px-3.5 py-3 text-sm" aria-label="Data Trends">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                        <polyline points="16 7 22 7 22 13"/>
+                    </svg>
+                    <span class="nav-label truncate">Data Trends</span>
+                </button>
+
+                <!-- Notifications -->
+                <button data-page="notifications" data-tooltip="Notifications" class="nav-item w-full flex items-center justify-between px-3.5 py-3 text-sm relative" aria-label="Notifications">
+                    <div class="flex items-center gap-3 truncate">
+                        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                        <span class="nav-label truncate">Notifications</span>
+                    </div>
+                    <span id="navNotifBadge" class="nav-badge bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">2</span>
+                </button>
+
+                <!-- About -->
+                <button data-page="about" data-tooltip="About" class="nav-item w-full flex items-center gap-3 px-3.5 py-3 text-sm" aria-label="About EcoBioT">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <span class="nav-label truncate">About</span>
+                </button>
+
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="pt-4 border-t border-white/60">
+            <div class="sidebar-footer-text">
+                <div class="flex items-center gap-2 text-xs font-semibold text-[#0F8B8D]">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="6"/>
+                        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                    </svg>
+                    <span>INOTECH 2026</span>
+                </div>
+                <p class="text-[11px] text-[#64777B] mt-0.5">by team tutuTitut</p>
+                <p class="text-[10px] text-[#8E9EA1] mt-1.5 font-mono">v1.5.0-release</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- TRANSLUCENT TOP BAR -->
+        <header class="glass-topbar px-6 md:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-20">
+            <div class="flex items-center gap-3">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileSidebar(true)" class="md:hidden p-2 rounded-xl glass-pill text-[#183B3D] shadow-xs transition" aria-label="Open Navigation">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" x2="20" y1="12" y2="12"/>
+                        <line x1="4" x2="20" y1="6" y2="6"/>
+                        <line x1="4" x2="20" y1="18" y2="18"/>
+                    </svg>
+                </button>
+
+                <div>
+                    <div class="flex items-center gap-1.5 text-xs text-[#64777B] font-medium mb-0.5">
+                        <span>EcoBioT</span>
+                        <svg class="w-3 h-3 text-[#8E9EA1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        <span id="breadcrumbPage" class="text-[#0F8B8D] font-semibold">Dashboard</span>
+                    </div>
+                    <h2 id="headerTitle" class="text-lg md:text-xl font-bold text-[#183B3D] tracking-tight">Dashboard Pengawasan Komposter</h2>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Quick Notification Button -->
+                <button onclick="switchPage('notifications')" class="relative p-2.5 rounded-xl glass-pill text-[#64777B] hover:text-[#0F8B8D] shadow-xs transition" title="Pusat Notifikasi">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                    <span id="headerNotifDot" class="w-2.5 h-2.5 bg-rose-500 rounded-full absolute top-1.5 right-1.5 ring-2 ring-white"></span>
+                </button>
+
+                <!-- MQTT Connectivity Pill -->
+                <div class="flex items-center gap-2 glass-pill px-3.5 py-1.5 rounded-full shadow-xs text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="font-medium text-[#64777B]">MQTT: <strong class="text-emerald-700">TERHUBUNG</strong></span>
+                </div>
+
+                <!-- System Mode Pill -->
+                <div class="flex items-center gap-2 glass-pill px-3.5 py-1.5 rounded-full shadow-xs text-xs">
+                    <svg class="w-3.5 h-3.5 text-[#0F8B8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="16" height="16" x="4" y="4" rx="2"/>
+                        <rect width="6" height="6" x="9" y="9" rx="1"/>
+                        <path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>
+                    </svg>
+                    <span class="font-medium text-[#64777B]">MODE: <strong id="badgeMode" class="text-[#0F8B8D]">AUTO-PILOT</strong></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SECTIONS WRAPPER -->
+        <div id="contentContainer" class="flex-1">
+
+            <!-- ========================================== -->
+            <!-- 1. SECTION: DASHBOARD                      -->
+            <!-- ========================================== -->
+            <section id="section-dashboard" class="page-section p-6 md:p-8 space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- LEFT & CENTER (METRIC CARDS & REALTIME CHART) -->
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- 4 REAL-TIME SENSOR METRIC CARDS -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            
+                            <!-- Suhu -->
+                            <div class="glass-card p-4 flex flex-col justify-between">
+                                <div class="flex items-center justify-between text-xs font-semibold text-[#64777B]">
+                                    <span>Suhu Kompos</span>
+                                    <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="my-3 text-center">
+                                    <span id="cardTemp" class="text-3xl font-extrabold text-[#183B3D]">48<span class="text-lg font-normal text-[#64777B]">°C</span></span>
+                                </div>
+                                <div class="flex justify-center">
+                                    <div class="text-[10px] font-semibold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-md text-center">
+                                        Termofilik Optimal
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kelembaban -->
+                            <div class="glass-card p-4 flex flex-col justify-between">
+                                <div class="flex items-center justify-between text-xs font-semibold text-[#64777B]">
+                                    <span>Kelembaban</span>
+                                    <div class="p-1.5 rounded-lg bg-teal-50 text-[#0F8B8D]">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                            <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="my-3 text-center">
+                                    <span id="cardHum" class="text-3xl font-extrabold text-[#183B3D]">62<span class="text-lg font-normal text-[#64777B]">%</span></span>
+                                </div>
+                                <div class="flex justify-center">
+                                    <div class="text-[10px] font-semibold text-[#0F8B8D] bg-teal-100/70 px-2.5 py-0.5 rounded-md text-center">
+                                        Target 55–65%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- pH Media -->
+                            <div class="glass-card p-4 flex flex-col justify-between">
+                                <div class="flex items-center justify-between text-xs font-semibold text-[#64777B]">
+                                    <span>pH Media</span>
+                                    <div class="p-1.5 rounded-lg bg-cyan-50 text-cyan-600">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/>
+                                            <path d="M8.5 2h7"/>
+                                            <path d="M7 16h10"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="my-3 text-center">
+                                    <span id="cardPh" class="text-3xl font-extrabold text-[#183B3D]">6.5</span>
+                                </div>
+                                <div class="flex justify-center">
+                                    <div class="text-[10px] font-semibold text-cyan-700 bg-cyan-100/70 px-2.5 py-0.5 rounded-md text-center">
+                                        Sedikit Asam (Ideal)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kadar Metana -->
+                            <div class="glass-card p-4 flex flex-col justify-between">
+                                <div class="flex items-center justify-between text-xs font-semibold text-[#64777B]">
+                                    <span>Gas Metana</span>
+                                    <div class="p-1.5 rounded-lg bg-amber-50 text-amber-600">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17.7 7.7A2.5 2.5 0 1 1 20 10H2"/>
+                                            <path d="M19.7 14a2.5 2.5 0 1 1-2.2 3.7"/>
+                                            <path d="M14.7 18.7A2.5 2.5 0 1 1 17 21H2"/>
+                                            <path d="M9.7 4.7A2.5 2.5 0 1 1 12 7H2"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="my-3 text-center">
+                                    <span id="cardCh4" class="text-3xl font-extrabold text-[#183B3D]">1.8 <span class="text-xs font-medium text-[#64777B]">ppm</span></span>
+                                </div>
+                                <div class="flex justify-center">
+                                    <div class="text-[10px] font-semibold text-amber-700 bg-amber-100/70 px-2.5 py-0.5 rounded-md text-center">
+                                        Aman & Minim Bau
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- REALTIME CHART -->
+                        <div class="glass-card p-6">
+                            <div class="flex flex-wrap justify-between items-center mb-5 gap-3">
+                                <div>
+                                    <h3 class="font-bold text-[#183B3D] text-sm md:text-base">Grafik Historis Real-Time (Suhu & Kelembaban)</h3>
+                                    <p class="text-xs text-[#64777B] mt-0.5">Telemetri diperbarui secara otomatis setiap 5 detik</p>
+                                </div>
+                                <button onclick="switchPage('trends')" class="text-xs font-semibold text-[#0F8B8D] hover:text-[#0A6365] glass-pill px-3.5 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1.5">
+                                    <span>Lihat Analisis Penuh</span>
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                </button>
+                            </div>
+                            <div class="relative h-64 md:h-72">
+                                <canvas id="sensorChart"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN (OVERRIDE PANEL & ACTIVITY LOG) -->
+                    <div class="space-y-6">
+                        
+                        <!-- OVERRIDE CONTROL PANEL -->
+                        <div class="glass-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#0F8B8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="3" y2="3"/>
+                                        <line x1="12" x2="12" y1="21" y2="3"/>
+                                    </svg>
+                                    <h3 class="font-bold text-[#183B3D] text-sm">Panel Kontrol Override</h3>
+                                </div>
+                                <span class="text-[10px] glass-pill text-[#0F8B8D] px-2.5 py-0.5 rounded-md font-mono font-bold">12V DC</span>
+                            </div>
+                            
+                            <!-- Toggle Manual Mode Switch -->
+                            <div class="flex items-center justify-between glass-pill p-3.5 rounded-xl mb-5">
+                                <div>
+                                    <span class="text-xs font-bold text-[#183B3D] block">Aktifkan Mode Manual</span>
+                                    <span class="text-[10px] text-[#64777B]">Mengambil alih otomatisasi</span>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="toggleMode" class="sr-only peer" onchange="toggleManualMode(this)">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0F8B8D]"></div>
+                                </label>
+                            </div>
+
+                            <!-- Actuator Action Controls -->
+                            <div id="manualControls" class="space-y-4 opacity-50 pointer-events-none transition-opacity">
+                                <div>
+                                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-[#64777B] mb-1.5">
+                                        <svg class="w-3.5 h-3.5 text-[#0F8B8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17.7 7.7A2.5 2.5 0 1 1 20 10H2"/><path d="M19.7 14a2.5 2.5 0 1 1-2.2 3.7"/><path d="M14.7 18.7A2.5 2.5 0 1 1 17 21H2"/>
+                                        </svg>
+                                        <span>Blower Aerasi (O₂):</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="kirimPerintah('blower', 'ON')" class="bg-gradient-to-r from-[#0F8B8D] to-[#15A1A4] hover:opacity-95 text-white text-xs font-semibold py-2.5 px-3 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg>
+                                            <span>Nyalakan</span>
+                                        </button>
+                                        <button onclick="kirimPerintah('blower', 'OFF')" class="glass-pill text-[#64777B] hover:text-[#183B3D] text-xs font-medium py-2.5 px-3 rounded-xl transition">
+                                            Matikan
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-[#64777B] mb-1.5">
+                                        <svg class="w-3.5 h-3.5 text-cyan-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                        </svg>
+                                        <span>Solenoid Valve Drainase (POC):</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="kirimPerintah('valve', 'OPEN')" class="bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-semibold py-2.5 px-3 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                            <span>Buka Valve</span>
+                                        </button>
+                                        <button onclick="kirimPerintah('valve', 'CLOSE')" class="glass-pill text-[#64777B] hover:text-[#183B3D] text-xs font-medium py-2.5 px-3 rounded-xl transition">
+                                            Tutup Valve
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-[11px] text-[#64777B] mt-4 italic">*Saat mode manual aktif, kontrol siklus otomatis sensor diabaikan sementara.</p>
+                        </div>
+
+                        <!-- ACTIVITY LOG PANEL -->
+                        <div class="glass-card p-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#0F8B8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <h3 class="font-bold text-[#183B3D] text-sm">Log Aktivitas Sistem</h3>
+                                </div>
+                                <button onclick="clearActivityLogs()" class="text-[11px] text-[#64777B] hover:text-rose-500 transition flex items-center gap-1">
+                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                    <span>Bersihkan</span>
+                                </button>
+                            </div>
+                            <div class="space-y-2 text-xs text-[#64777B] max-h-48 overflow-y-auto pr-1" id="logContainer">
+                                <div class="p-2.5 bg-amber-50/70 border-l-2 border-amber-500 rounded-lg">
+                                    <div class="font-medium text-amber-900">Peringatan: Suhu tinggi - Fase Termofilik aktif</div>
+                                    <span class="text-[10px] text-amber-700/70 block mt-0.5">10 mnt lalu</span>
+                                </div>
+                                <div class="p-2.5 bg-emerald-50/70 border-l-2 border-emerald-500 rounded-lg">
+                                    <div class="font-medium text-emerald-900">Siklus aerasi otomatis O₂ berjalan optimal</div>
+                                    <span class="text-[10px] text-emerald-700/70 block mt-0.5">30 mnt lalu</span>
+                                </div>
+                                <div class="p-2.5 bg-teal-50/70 border-l-2 border-teal-500 rounded-lg">
+                                    <div class="font-medium text-teal-900">Mode Auto-Pilot aktif kembali</div>
+                                    <span class="text-[10px] text-teal-700/70 block mt-0.5">1 jam lalu</span>
+                                </div>
+                                <div class="p-2.5 bg-white/70 border-l-2 border-[#0F8B8D] rounded-lg">
+                                    <div class="font-medium text-[#183B3D]">Koneksi broker MQTT stabil (broker.emqx.io)</div>
+                                    <span class="text-[10px] text-[#64777B] block mt-0.5">2 jam lalu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 2. SECTION: COMPOSTER STATUS               -->
+            <!-- ========================================== -->
+            <section id="section-status" class="page-section p-6 md:p-8 space-y-6 hidden">
+                
+                <!-- HERO SUMMARY BANNER -->
+                <div class="glass-card p-6 md:p-7 relative overflow-hidden bg-gradient-to-r from-white/80 via-white/70 to-teal-50/70">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2.5">
+                                <span class="px-3 py-1 bg-teal-100/80 text-[#0F8B8D] rounded-full text-xs font-bold flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-[#0F8B8D] animate-pulse"></span>
+                                    <span>Fase Aktif: Termofilik</span>
+                                </span>
+                                <span class="text-xs text-[#64777B] font-medium">Hari ke-8 dari 21</span>
+                            </div>
+                            <h3 class="text-2xl font-extrabold text-[#183B3D] tracking-tight">Kondisi Dekomposisi Sangat Optimal</h3>
+                            <p class="text-sm text-[#64777B] mt-1 max-w-xl leading-relaxed">
+                                Populasi bakteri termofilik bekerja aktif pada suhu 48°C. Aerasi terkontrol mempertahankan kondisi aerobik sempurna, mematikan biji gulma dan bibit penyakit secara menyeluruh.
+                            </p>
+                        </div>
+                        
+                        <div class="flex items-center gap-6 bg-white/70 p-4.5 rounded-2xl border border-white/80 shadow-xs self-stretch md:self-auto justify-around">
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-[#0F8B8D]">94<span class="text-sm font-normal text-[#64777B]">/100</span></div>
+                                <div class="text-[11px] font-semibold text-[#64777B] mt-0.5">Skor Kesehatan</div>
+                            </div>
+                            <div class="w-px h-10 bg-gray-200"></div>
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-amber-600">13 <span class="text-xs font-normal text-[#64777B]">Hari</span></div>
+                                <div class="text-[11px] font-semibold text-[#64777B] mt-0.5">Est. Panen Kompos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 DECOMPOSITION LIFECYCLE PHASES -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <div>
+                            <h3 class="font-bold text-[#183B3D] text-base">Tahapan Dekomposisi Kompos (21 Hari)</h3>
+                            <p class="text-xs text-[#64777B]">Pemantauan siklus biokimia reaktor komposting terotomasi</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 bg-teal-100 text-[#0F8B8D] rounded-lg">Progres: 38%</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Step 1 -->
+                        <div class="p-4 rounded-xl border border-emerald-200 bg-white/60">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-emerald-800">Fase 1: Mesofilik Awal</span>
+                                <span class="text-[10px] bg-emerald-600 text-white font-bold rounded-full px-2 py-0.5">Selesai</span>
+                            </div>
+                            <div class="text-lg font-bold text-[#183B3D]">Hari 1 – 3</div>
+                            <div class="text-xs text-[#64777B] mt-1">Suhu 20°C–40°C. Degradasi senyawa gula dan asam amino terlarut.</div>
+                            <div class="mt-3 text-[11px] font-semibold text-emerald-700">Status: Berhasil Optimal</div>
+                        </div>
+
+                        <!-- Step 2 (Active) -->
+                        <div class="p-4 rounded-xl border-2 border-[#0F8B8D] bg-teal-50/70 shadow-xs relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-[#0F8B8D]">Fase 2: Termofilik</span>
+                                <span class="text-[10px] bg-[#0F8B8D] text-white font-bold rounded-full px-2 py-0.5 animate-pulse">Aktif</span>
+                            </div>
+                            <div class="text-lg font-bold text-[#183B3D]">Hari 4 – 14</div>
+                            <div class="text-xs text-[#64777B] mt-1">Suhu 45°C–65°C. Degradasi selulosa & protein, sterilisasi patogen.</div>
+                            <div class="mt-3 text-[11px] font-bold text-[#0F8B8D]">Posisi: Hari ke-8 (48°C)</div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="p-4 rounded-xl border border-gray-200/70 bg-white/40">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-[#64777B]">Fase 3: Pendinginan</span>
+                                <span class="text-[10px] bg-gray-200 text-[#64777B] font-bold rounded-full px-2 py-0.5">Menunggu</span>
+                            </div>
+                            <div class="text-lg font-bold text-[#64777B]">Hari 15 – 18</div>
+                            <div class="text-xs text-[#8E9EA1] mt-1">Suhu 35°C–45°C. Jamur & Actinomycetes mendekomposisi lignin.</div>
+                            <div class="mt-3 text-[11px] text-[#8E9EA1]">Est. Mulai: 18 Okt 2026</div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="p-4 rounded-xl border border-gray-200/70 bg-white/40">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-[#64777B]">Fase 4: Maturasi</span>
+                                <span class="text-[10px] bg-gray-200 text-[#64777B] font-bold rounded-full px-2 py-0.5">Menunggu</span>
+                            </div>
+                            <div class="text-lg font-bold text-[#64777B]">Hari 19 – 21</div>
+                            <div class="text-xs text-[#8E9EA1] mt-1">Suhu ruang (<30°C). Pembentukan humus matang siap kemas.</div>
+                            <div class="mt-3 text-[11px] text-[#8E9EA1]">Est. Panen: 24 Okt 2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 SUBSYSTEM HARDWARE STATUS CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Blower Aerasi -->
+                    <div class="glass-card p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="p-2 bg-teal-50 text-[#0F8B8D] rounded-xl">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17.7 7.7A2.5 2.5 0 1 1 20 10H2"/><path d="M19.7 14a2.5 2.5 0 1 1-2.2 3.7"/><path d="M14.7 18.7A2.5 2.5 0 1 1 17 21H2"/>
+                                    </svg>
+                                </div>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full animate-pulse">BERPUTAR (75%)</span>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Blower Aerasi Aktif (O₂)</h4>
+                            <p class="text-xs text-[#64777B] mt-0.5">Centrifugal Fan DC 12V PWM Speed Control</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Kadar O₂ Chamber:</span>
+                                <span class="font-bold text-emerald-700">16.5% (Aerobik)</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Debit Aliran Udara:</span>
+                                <span class="font-semibold text-[#183B3D]">15 Liter / Menit</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Target Suhu Maks:</span>
+                                <span class="font-semibold text-[#183B3D]">Stabil < 55°C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tangki & Solenoid POC -->
+                    <div class="glass-card p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="p-2 bg-cyan-50 text-cyan-600 rounded-xl">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                    </svg>
+                                </div>
+                                <span class="px-2.5 py-0.5 bg-cyan-100 text-cyan-800 text-[10px] font-bold rounded-full">TERTUTUP</span>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Solenoid & Tangki POC</h4>
+                            <p class="text-xs text-[#64777B] mt-0.5">Penampung Pupuk Organik Cair & Katup 12V</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Volume Terkumpul:</span>
+                                <span class="font-bold text-cyan-700">3.4 L / 5.0 L (68%)</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>pH Pupuk Cair:</span>
+                                <span class="font-semibold text-[#183B3D]">6.8 (Netral Kaya Hara)</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Kran Draining:</span>
+                                <span class="font-semibold text-emerald-700">Siap Panen</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ESP32 & IoT Telemetri -->
+                    <div class="glass-card p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/>
+                                        <path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/>
+                                    </svg>
+                                </div>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">ONLINE (QoS 1)</span>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Node ESP32 Controller</h4>
+                            <p class="text-xs text-[#64777B] mt-0.5">Dual Core 240MHz FreeRTOS Firmware</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Sinyal Wi-Fi (RSSI):</span>
+                                <span class="font-bold text-emerald-700">-58 dBm (Sangat Kuat)</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Tegangan Suplai:</span>
+                                <span class="font-semibold text-[#183B3D]">12.2V DC (Stabil)</span>
+                            </div>
+                            <div class="flex justify-between text-[#64777B]">
+                                <span>Uptime Sistem:</span>
+                                <span class="font-semibold text-[#183B3D]">6 Hari 14 Jam</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CHAMBER PHYSICAL SPECS & BIOCHEMISTRY -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-6">
+                        <h4 class="font-bold text-[#183B3D] text-sm mb-3">Kapasitas & Biomassa Reaktor</h4>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#64777B]">Biomassa Saat Ini</span>
+                            <span class="text-sm font-bold text-[#183B3D]">42.5 kg / 60 kg</span>
+                        </div>
+                        <div class="w-full bg-gray-200/80 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-[#0F8B8D] h-2.5 rounded-full" style="width: 71%"></div>
+                        </div>
+                        <div class="mt-3 text-xs text-[#64777B] flex justify-between">
+                            <span>Sisa Ruang: 17.5 kg</span>
+                            <span class="text-[#0F8B8D] font-bold">Kapasitas 71%</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h4 class="font-bold text-[#183B3D] text-sm mb-3">Estimasi Rasio C/N Bahan</h4>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#64777B]">Rasio Karbon/Nitrogen</span>
+                            <span class="text-sm font-bold text-[#183B3D]">26 : 1</span>
+                        </div>
+                        <div class="w-full bg-gray-200/80 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-cyan-500 h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <div class="mt-3 text-xs text-[#64777B] flex justify-between">
+                            <span>Target Ideal: 25–30 : 1</span>
+                            <span class="text-cyan-700 font-bold">Seimbang</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h4 class="font-bold text-[#183B3D] text-sm mb-3">Diferensial Suhu (ΔT)</h4>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#64777B]">Inti Kompos vs Ambien</span>
+                            <span class="text-sm font-bold text-emerald-700">+18.2 °C</span>
+                        </div>
+                        <div class="w-full bg-gray-200/80 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <div class="mt-3 text-xs text-[#64777B] flex justify-between">
+                            <span>Suhu Ruang: 29.8°C</span>
+                            <span class="text-emerald-700 font-bold">Aktivitas Sangat Aktif</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 3. SECTION: DATA TRENDS                    -->
+            <!-- ========================================== -->
+            <section id="section-trends" class="page-section p-6 md:p-8 space-y-6 hidden">
+                
+                <!-- FILTER BAR -->
+                <div class="glass-card p-6 flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-[#183B3D] text-base">Analisis Tren & Data Historis</h3>
+                        <p class="text-xs text-[#64777B] mt-0.5">Pemantauan kurva multi-parameter dan log telemetri sensor</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Time Range Filter -->
+                        <div class="flex bg-white/70 border border-white/80 p-1 rounded-xl text-xs font-semibold shadow-xs" id="timeRangeFilter">
+                            <button onclick="changeTimeRange('24h')" id="btnRange24h" class="px-3.5 py-1.5 rounded-lg bg-[#0F8B8D] text-white shadow-xs font-bold transition">24 Jam</button>
+                            <button onclick="changeTimeRange('7d')" id="btnRange7d" class="px-3.5 py-1.5 rounded-lg text-[#64777B] hover:text-[#183B3D] transition">7 Hari</button>
+                            <button onclick="changeTimeRange('30d')" id="btnRange30d" class="px-3.5 py-1.5 rounded-lg text-[#64777B] hover:text-[#183B3D] transition">30 Hari</button>
+                        </div>
+
+                        <!-- Export CSV Button -->
+                        <button onclick="exportDataCSV()" class="flex items-center gap-2 bg-gradient-to-r from-[#0F8B8D] to-[#15A1A4] hover:opacity-95 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-xs transition">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" x2="12" y1="15" y2="3"/>
+                            </svg>
+                            <span>Ekspor CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STATISTICAL SUMMARY CARDS -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-xs text-[#64777B]">Rata-rata Suhu</div>
+                        <div class="text-2xl font-extrabold text-[#0F8B8D] my-1">46.8°C</div>
+                        <div class="text-[11px] text-[#64777B]">Min: 28.5°C | Maks: 54.2°C</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-xs text-[#64777B]">Rata-rata Kelembaban</div>
+                        <div class="text-2xl font-extrabold text-cyan-600 my-1">61.5%</div>
+                        <div class="text-[11px] text-[#64777B]">Min: 54.0% | Maks: 68.2%</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-xs text-[#64777B]">Rata-rata pH</div>
+                        <div class="text-2xl font-extrabold text-purple-600 my-1">6.6</div>
+                        <div class="text-[11px] text-[#64777B]">Min: 6.2 | Maks: 6.9</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-xs text-[#64777B]">Rata-rata Metana (CH₄)</div>
+                        <div class="text-2xl font-extrabold text-amber-600 my-1">1.5 <span class="text-xs font-normal">ppm</span></div>
+                        <div class="text-[11px] text-[#64777B]">Puncak: 2.3 ppm (Aman)</div>
+                    </div>
+                </div>
+
+                <!-- TRENDS MULTI-PARAMETER CHART -->
+                <div class="glass-card p-6">
+                    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+                        <h4 class="font-bold text-[#183B3D] text-sm">Fluktuasi Multi-Parameter (Suhu, Kelembaban, pH, & Metana)</h4>
+                        <div class="flex items-center gap-3 text-xs">
+                            <span class="inline-flex items-center gap-1.5 text-[#0F8B8D] font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-[#0F8B8D]"></span> Suhu (°C)</span>
+                            <span class="inline-flex items-center gap-1.5 text-cyan-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span> Kelembaban (%)</span>
+                            <span class="inline-flex items-center gap-1.5 text-purple-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> pH (x10)</span>
+                            <span class="inline-flex items-center gap-1.5 text-amber-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Metana (ppm)</span>
+                        </div>
+                    </div>
+                    <div class="relative h-80">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- HISTORICAL TELEMETRY LOG TABLE -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-[#183B3D] text-sm">Log Pembacaan Telemetri Terakhir</h4>
+                        <span class="text-xs text-[#64777B] font-mono">Format JSON Payload</span>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-white/80">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-white/80 text-[#64777B] uppercase font-bold border-b border-gray-200/60">
+                                <tr>
+                                    <th class="px-4 py-3">Timestamp</th>
+                                    <th class="px-4 py-3">Suhu (°C)</th>
+                                    <th class="px-4 py-3">Kelembaban (%)</th>
+                                    <th class="px-4 py-3">pH Media</th>
+                                    <th class="px-4 py-3">Metana (ppm)</th>
+                                    <th class="px-4 py-3">Status Aerasi</th>
+                                    <th class="px-4 py-3">Kondisi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="telemetryTableBody" class="divide-y divide-gray-100 bg-white/40 text-[#183B3D]">
+                                <!-- Populated dynamically by script.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 4. SECTION: NOTIFICATIONS                  -->
+            <!-- ========================================== -->
+            <section id="section-notifications" class="page-section p-6 md:p-8 space-y-6 hidden">
+                
+                <!-- HEADER & FILTER TOOLBAR -->
+                <div class="glass-card p-6 flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <h3 class="font-bold text-[#183B3D] text-base">Pusat Notifikasi & Alarm Sistem</h3>
+                            <span id="unreadCounterPill" class="px-2.5 py-0.5 bg-rose-100 text-rose-700 font-bold text-xs rounded-full">2 Baru</span>
+                        </div>
+                        <p class="text-xs text-[#64777B] mt-1">Pemantauan alarm ambang batas sensor dan algoritma keselamatan IoT</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex bg-white/70 border border-white/80 p-1 rounded-xl text-xs font-semibold shadow-xs" id="notifFilterTabs">
+                            <button onclick="filterNotifications('all')" id="btnNotifAll" class="px-3.5 py-1.5 rounded-lg bg-[#0F8B8D] text-white font-bold transition">Semua</button>
+                            <button onclick="filterNotifications('warning')" id="btnNotifWarning" class="px-3.5 py-1.5 rounded-lg text-[#64777B] hover:text-[#183B3D] transition">Peringatan</button>
+                            <button onclick="filterNotifications('info')" id="btnNotifInfo" class="px-3.5 py-1.5 rounded-lg text-[#64777B] hover:text-[#183B3D] transition">Informasi</button>
+                            <button onclick="filterNotifications('system')" id="btnNotifSystem" class="px-3.5 py-1.5 rounded-lg text-[#64777B] hover:text-[#183B3D] transition">Sistem / MQTT</button>
+                        </div>
+
+                        <button onclick="markAllNotificationsAsRead()" class="text-xs font-bold text-[#0F8B8D] hover:text-[#0A6365] bg-white/70 hover:bg-white border border-white/80 px-4 py-2 rounded-xl shadow-xs transition flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/>
+                            </svg>
+                            <span>Tandai Semua Dibaca</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NOTIFICATION CARDS LIST -->
+                <div class="space-y-3.5" id="notificationsList">
+                    
+                    <!-- Notif 1: Suhu Termofilik (Warning) -->
+                    <div data-notif-id="1" data-type="warning" data-unread="true" class="notif-card glass-card p-5 border-l-4 border-l-amber-500 flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2.5 bg-amber-100 text-amber-700 rounded-xl mt-0.5 flex-shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h4 class="font-bold text-[#183B3D] text-sm">Suhu Mencapai Fase Termofilik Puncak (48°C – 52°C)</h4>
+                                    <span class="badge-unread px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full">BARU</span>
+                                </div>
+                                <p class="text-xs text-[#64777B] leading-relaxed">Suhu inti kompos naik sesuai kurva dekomposisi optimal. Blower aerasi diaktifkan pada level PWM 75% untuk mempertahankan pasokan oksigen aerobik dan mencegah overheating.</p>
+                                <div class="flex items-center gap-3 mt-3 text-[11px] text-[#64777B]">
+                                    <span>15 menit lalu</span>
+                                    <span>•</span>
+                                    <span class="text-amber-700 font-semibold">Ambang Batas Sensor</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="markNotificationAsRead(1)" class="btn-mark-read text-xs font-semibold text-[#0F8B8D] hover:text-[#0A6365] bg-white/70 hover:bg-white border border-white/80 px-3 py-1.5 rounded-lg shadow-xs transition whitespace-nowrap">Tandai Dibaca</button>
+                    </div>
+
+                    <!-- Notif 2: Level POC (Warning) -->
+                    <div data-notif-id="2" data-type="warning" data-unread="true" class="notif-card glass-card p-5 border-l-4 border-l-cyan-500 flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2.5 bg-cyan-100 text-cyan-700 rounded-xl mt-0.5 flex-shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h4 class="font-bold text-[#183B3D] text-sm">Kapasitas Tangki Pupuk Organik Cair (POC) 68%</h4>
+                                    <span class="badge-unread px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full">BARU</span>
+                                </div>
+                                <p class="text-xs text-[#64777B] leading-relaxed">Volume pupuk cair organik telah terkumpul 3.4 Liter dari kapasitas 5.0 Liter. Siapkan wadah jika ingin melakukan panen POC murni bernutrisi tinggi.</p>
+                                <div class="flex items-center gap-3 mt-3 text-[11px] text-[#64777B]">
+                                    <span>1 jam lalu</span>
+                                    <span>•</span>
+                                    <span class="text-cyan-700 font-semibold">Hasil Produk POC</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="markNotificationAsRead(2)" class="btn-mark-read text-xs font-semibold text-[#0F8B8D] hover:text-[#0A6365] bg-white/70 hover:bg-white border border-white/80 px-3 py-1.5 rounded-lg shadow-xs transition whitespace-nowrap">Tandai Dibaca</button>
+                    </div>
+
+                    <!-- Notif 3: Aerasi Berkala Selesai (Info) -->
+                    <div data-notif-id="3" data-type="info" data-unread="false" class="notif-card glass-card p-5 border-l-4 border-l-[#0F8B8D] opacity-80 flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2.5 bg-teal-100 text-[#0F8B8D] rounded-xl mt-0.5 flex-shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.7 7.7A2.5 2.5 0 1 1 20 10H2"/><path d="M19.7 14a2.5 2.5 0 1 1-2.2 3.7"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-[#183B3D] text-sm mb-1">Siklus Aerasi Berkala Selesai</h4>
+                                <p class="text-xs text-[#64777B] leading-relaxed">Blower aerasi telah menyelesaikan injeksi oksigen berkala. Oksigen chamber terjaga stabil pada 16.5% untuk mempertahankan metabolisme mikroorganisme aerobik.</p>
+                                <div class="flex items-center gap-3 mt-3 text-[11px] text-[#64777B]">
+                                    <span>3 jam lalu</span>
+                                    <span>•</span>
+                                    <span class="text-[#0F8B8D] font-semibold">Siklus Otomatis</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-[#8E9EA1] italic">Sudah dibaca</span>
+                    </div>
+
+                    <!-- Notif 4: MQTT Sync (System) -->
+                    <div data-notif-id="4" data-type="system" data-unread="false" class="notif-card glass-card p-5 border-l-4 border-l-emerald-500 opacity-80 flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2.5 bg-emerald-100 text-emerald-700 rounded-xl mt-0.5 flex-shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-[#183B3D] text-sm mb-1">Koneksi Broker MQTT Berhasil Ditetapkan</h4>
+                                <p class="text-xs text-[#64777B] leading-relaxed">Sistem telemetri terhubung ke broker MQTT publik (broker.emqx.io:8083 via WSS) dengan latensi 42ms. Topik `innotech/ecobiot/#` aktif.</p>
+                                <div class="flex items-center gap-3 mt-3 text-[11px] text-[#64777B]">
+                                    <span>5 jam lalu</span>
+                                    <span>•</span>
+                                    <span class="text-emerald-700 font-semibold">Konektivitas IoT</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-[#8E9EA1] italic">Sudah dibaca</span>
+                    </div>
+
+                    <!-- Notif 5: Rasio Optimal (Info) -->
+                    <div data-notif-id="5" data-type="info" data-unread="false" class="notif-card glass-card p-5 border-l-4 border-l-teal-500 opacity-80 flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2.5 bg-teal-100 text-[#0F8B8D] rounded-xl mt-0.5 flex-shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-[#183B3D] text-sm mb-1">Keseimbangan Rasio Kelembaban & pH Stabil</h4>
+                                <p class="text-xs text-[#64777B] leading-relaxed">Nilai kelembaban tercatat 62% dan pH 6.5. Kondisi lingkungan berada dalam rentang ideal menurut standar mutu SNI 19-7030-2004.</p>
+                                <div class="flex items-center gap-3 mt-3 text-[11px] text-[#64777B]">
+                                    <span>1 hari lalu</span>
+                                    <span>•</span>
+                                    <span class="text-[#0F8B8D] font-semibold">Kualitas Kompos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-[#8E9EA1] italic">Sudah dibaca</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ========================================== -->
+            <!-- 5. SECTION: ABOUT                          -->
+            <!-- ========================================== -->
+            <section id="section-about" class="page-section p-6 md:p-8 space-y-6 hidden">
+                
+                <!-- HERO PROJECT BANNER -->
+                <div class="glass-card p-7 md:p-8 relative overflow-hidden bg-gradient-to-br from-white/90 via-white/80 to-teal-50/80">
+                    <div class="max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-teal-100/80 border border-teal-200/80 rounded-full text-xs font-bold text-[#0F8B8D] mb-4">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="6"/>
+                                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                            </svg>
+                            <span>INOTECH 2026 – Universitas Sebelas Maret (UNS) Kampus Madiun</span>
+                        </div>
+                        <h3 class="text-3xl font-extrabold text-[#183B3D] tracking-tight">EcoBioT: Smart Composter</h3>
+                        <p class="text-[#0F8B8D] font-semibold text-sm mt-1">Ecological Bio-Technology Smart Composting & Liquid Fertilizer Automation</p>
+                        <p class="text-[#64777B] text-xs sm:text-sm mt-4 leading-relaxed">
+                            EcoBioT adalah sistem reaktor pengomposan cerdas berbasis Internet of Things (IoT) yang mengintegrasikan otomasi aerasi aktif berbasis parameter suhu dan gas, sistem penampungan dan pengurasan Pupuk Organik Cair (POC) otomatis, serta pemantauan telemetri real-time. Dirancang untuk mempercepat degradasi sampah organik perkotaan dan limbah rumah tangga menjadi kompos padat bermutu tinggi dan POC bernutrisi dalam 14–21 hari.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3 ADVANTAGES CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="p-2.5 bg-teal-50 text-[#0F8B8D] rounded-xl inline-block mb-3">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Akselerasi Dekomposisi</h4>
+                            <p class="text-xs text-[#64777B] mt-2 leading-relaxed">Memangkas durasi komposting konvensional (60–90 hari) menjadi hanya 14–21 hari melalui sirkulasi udara terkontrol yang menjaga koloni bakteri aerobik tetap produktif.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 text-[11px] font-bold text-[#0F8B8D]">Efisiensi Waktu: 70%+</div>
+                    </div>
+
+                    <div class="glass-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="p-2.5 bg-cyan-50 text-cyan-600 rounded-xl inline-block mb-3">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Produksi Ganda Padat & POC</h4>
+                            <p class="text-xs text-[#64777B] mt-2 leading-relaxed">Menghasilkan kompos padat kaya humus sekaligus menampung cairan lindi fermentasi secara higienis untuk dijadikan Pupuk Organik Cair (POC) siap pakai bagi tanaman hortikultura.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 text-[11px] font-bold text-cyan-700">Zero-Waste Circular Recovery</div>
+                    </div>
+
+                    <div class="glass-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl inline-block mb-3">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-[#183B3D] text-sm">Mitigasi Emisi & Bebas Bau</h4>
+                            <p class="text-xs text-[#64777B] mt-2 leading-relaxed">Mencegah kondisi anaerobik yang menghasilkan gas berbau tajam (H₂S, NH₃) serta menekan konsentrasi emisi gas metana (CH₄) di bawah 3 ppm.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 text-[11px] font-bold text-emerald-700">Ramah Lingkungan & Higienis</div>
+                    </div>
+                </div>
+
+                <!-- HARDWARE & TECH ARCHITECTURE -->
+                <div class="glass-card p-6">
+                    <h4 class="font-bold text-[#183B3D] text-base mb-4">Arsitektur & Spesifikasi Perangkat</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        
+                        <div class="p-4 bg-white/60 rounded-xl border border-white/80">
+                            <div class="flex items-center gap-1.5 text-xs font-bold text-[#0F8B8D] mb-1.5">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/></svg>
+                                <span>Unit Mikrokontroler</span>
+                            </div>
+                            <div class="text-xs text-[#64777B] space-y-1">
+                                <p>• ESP32 NodeMCU-32S</p>
+                                <p>• Dual-Core Xtensa LX6 240MHz</p>
+                                <p>• FreeRTOS Task Scheduling</p>
+                                <p>• Wi-Fi 802.11 b/g/n & BLE</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white/60 rounded-xl border border-white/80">
+                            <div class="flex items-center gap-1.5 text-xs font-bold text-cyan-700 mb-1.5">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                <span>Sensor Telemetri</span>
+                            </div>
+                            <div class="text-xs text-[#64777B] space-y-1">
+                                <p>• Suhu: DS18B20 Stainless Probe</p>
+                                <p>• Kelembaban: Capacitive Soil v1.2</p>
+                                <p>• Keasaman: Analog pH Probe Sen0161</p>
+                                <p>• Gas Metana: MQ-4 Semiconductor</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white/60 rounded-xl border border-white/80">
+                            <div class="flex items-center gap-1.5 text-xs font-bold text-[#0F8B8D] mb-1.5">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg>
+                                <span>Aktuator Elektrik</span>
+                            </div>
+                            <div class="text-xs text-[#64777B] space-y-1">
+                                <p>• Blower Sentrifugal 12V DC PWM</p>
+                                <p>• Solenoid Valve Kuningan 12V</p>
+                                <p>• Modul Driver Relay Optocoupler</p>
+                                <p>• Saluran Aerasi Multi-Nozzle</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white/60 rounded-xl border border-white/80">
+                            <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 mb-1.5">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/></svg>
+                                <span>Jaringan & Cloud</span>
+                            </div>
+                            <div class="text-xs text-[#64777B] space-y-1">
+                                <p>• Broker MQTT (EMQX / Mosquitto)</p>
+                                <p>• WebSocket Port 8083 (WSS)</p>
+                                <p>• Glassmorphism SaaS UI</p>
+                                <p>• Grafik Interaktif Chart.js</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- TEAM PROFILE & BACK BUTTON -->
+                <div class="glass-card p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h4 class="font-bold text-[#183B3D] text-sm">Tim Pengembang Inovasi EcoBioT</h4>
+                        <p class="text-xs text-[#64777B] mt-0.5">Karya Inovasi Teknologi untuk INOTECH 2026 – Universitas Sebelas Maret (UNS) Kampus Madiun</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-teal-100/80 text-[#0F8B8D] border border-teal-200 px-3 py-1 rounded-lg font-semibold">Bioteknologi & Lingkungan</span>
+                            <span class="text-xs bg-cyan-100/80 text-cyan-800 border border-cyan-200 px-3 py-1 rounded-lg font-semibold">Rekayasa IoT & Telemetri</span>
+                            <span class="text-xs bg-emerald-100/80 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-lg font-semibold">Sistem Otomasi Cerdas</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 self-stretch md:self-auto justify-end">
+                        <button onclick="switchPage('dashboard')" class="bg-gradient-to-r from-[#0F8B8D] to-[#15A1A4] hover:opacity-95 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- External JavaScript -->
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

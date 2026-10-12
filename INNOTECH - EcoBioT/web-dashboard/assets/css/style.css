@@ -1,0 +1,287 @@
+/* =============================================================================
+   EcoBioT Smart Composter - Soft Glassmorphism Design System
+   With Luminous Teal Color Gradation & Ambient Translucency
+   INOTECH 2026 - Universitas Sebelas Maret (UNS) Kampus Madiun
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-teal: #0F8B8D;
+    --primary-teal-dark: #0A6365;
+    --primary-teal-light: rgba(15, 139, 141, 0.12);
+    --secondary-cyan: #55C9C2;
+    --secondary-cyan-dark: #2EB5B8;
+    --secondary-cyan-light: rgba(85, 201, 194, 0.15);
+    
+    --text-primary: #183B3D;
+    --text-secondary: #64777B;
+    --text-muted: #8E9EA1;
+    
+    /* Translucent Glass with Subtle Teal Color Gradation */
+    --glass-bg: linear-gradient(140deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 253, 250, 0.72) 42%, rgba(197, 248, 241, 0.45) 100%);
+    --glass-bg-subtle: linear-gradient(140deg, rgba(255, 255, 255, 0.68) 0%, rgba(240, 253, 250, 0.56) 50%, rgba(204, 251, 241, 0.32) 100%);
+    --glass-bg-hover: linear-gradient(140deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 253, 250, 0.84) 45%, rgba(197, 248, 241, 0.58) 100%);
+    --glass-border: rgba(255, 255, 255, 0.85);
+    --glass-border-light: rgba(255, 255, 255, 0.65);
+    --glass-border-teal: rgba(85, 201, 194, 0.40);
+    
+    /* Refined Shadows with Inner Reflection & Soft Teal Glow */
+    --glass-shadow: 0 8px 32px 0 rgba(15, 139, 141, 0.09), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 16px 0 rgba(85, 201, 194, 0.08);
+    --glass-shadow-hover: 0 14px 40px 0 rgba(15, 139, 141, 0.16), inset 0 1px 2px 0 rgba(255, 255, 255, 1), inset 0 0 22px 0 rgba(85, 201, 194, 0.14);
+    --glass-shadow-active: 0 4px 18px 0 rgba(15, 139, 141, 0.35);
+    
+    --radius-card: 20px;
+    --radius-nav: 14px;
+}
+
+/* Base Body Styles with Ambient Teal Gradient & Meshes */
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary);
+    background: 
+        radial-gradient(ellipse at 12% 16%, rgba(85, 201, 194, 0.35) 0%, transparent 48%),
+        radial-gradient(ellipse at 88% 18%, rgba(15, 139, 141, 0.25) 0%, transparent 46%),
+        radial-gradient(ellipse at 50% 80%, rgba(20, 184, 166, 0.22) 0%, transparent 52%),
+        radial-gradient(ellipse at 92% 88%, rgba(125, 211, 252, 0.20) 0%, transparent 45%),
+        linear-gradient(135deg, #d8f5f1 0%, #e2f6f4 25%, #eaf3f8 60%, #edf0fa 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Surface Components with Teal Gradation */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-card);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-card);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.glass-card:hover {
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Sidebar with Vertical Translucent Teal Gradient */
+.glass-sidebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(240, 253, 250, 0.78) 45%, rgba(204, 251, 241, 0.60) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 4px 0 24px 0 rgba(15, 139, 141, 0.08);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Topbar with Horizontal Translucent Teal Gradient */
+.glass-topbar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.86) 0%, rgba(240, 253, 250, 0.76) 45%, rgba(220, 247, 245, 0.65) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 20px 0 rgba(15, 139, 141, 0.06);
+}
+
+/* Translucent Teal Pill Components */
+.glass-pill {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 253, 250, 0.75) 50%, rgba(204, 251, 241, 0.45) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 10px 0 rgba(15, 139, 141, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-pill:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 253, 250, 0.85) 50%, rgba(204, 251, 241, 0.58) 100%);
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 14px 0 rgba(15, 139, 141, 0.10);
+}
+
+/* Graceful Fallback for browsers without backdrop-filter support */
+@supports not ((-webkit-backdrop-filter: blur(20px)) or (backdrop-filter: blur(20px))) {
+    .glass-panel,
+    .glass-card,
+    .glass-sidebar,
+    .glass-topbar,
+    .glass-pill {
+        background: #f0fdfa;
+    }
+}
+
+/* Interactive Navigation Items */
+.nav-item {
+    position: relative;
+    color: var(--text-secondary);
+    border-radius: var(--radius-nav);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.nav-item:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 253, 250, 0.75) 100%);
+    color: var(--primary-teal);
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px 0 rgba(15, 139, 141, 0.08);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, var(--primary-teal) 0%, #15A1A4 100%);
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: var(--glass-shadow-active);
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 4px;
+    background: var(--secondary-cyan);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(85, 201, 194, 0.8);
+}
+
+.nav-item:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--primary-teal);
+}
+
+/* Sidebar Collapsed State & Tooltips */
+.sidebar-collapsed {
+    width: 80px !important;
+}
+
+.sidebar-collapsed .sidebar-text,
+.sidebar-collapsed .sidebar-footer-text,
+.sidebar-collapsed .nav-label {
+    display: none !important;
+}
+
+.sidebar-collapsed .nav-item {
+    justify-content: center !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+.sidebar-collapsed .nav-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+
+/* Native CSS Tooltip for Collapsed Sidebar Items */
+.sidebar-collapsed .nav-item[data-tooltip] {
+    position: relative;
+}
+
+.sidebar-collapsed .nav-item[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #183B3D;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 60;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+    animation: tooltipIn 0.15s ease-out;
+}
+
+.sidebar-collapsed .nav-item[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #183B3D transparent transparent;
+    z-index: 60;
+    pointer-events: none;
+}
+
+@keyframes tooltipIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(15, 139, 141, 0.28);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 139, 141, 0.50);
+}
+
+/* Smooth Page Fade In */
+.page-section {
+    animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification Item Read/Unread Transitions */
+.notif-card {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notif-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-hover);
+}
